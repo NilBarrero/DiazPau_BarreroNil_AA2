@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\pdiaz\\Documents\\GrandTheftAuto_ENTI_City\\GTA_ENTI_CITY_SOL\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{1EB57CA8-877F-4D89-AC7A-11EF14E089CA}|GTA_ENTI_CITY\\GTA_ENTI_CITY.vcxproj|C:\\Users\\pdiaz\\Documents\\GrandTheftAuto_ENTI_City\\GTA_ENTI_CITY_SOL\\GTA_ENTI_CITY\\GTA_ENTI_CITY.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{1EB57CA8-877F-4D89-AC7A-11EF14E089CA}|GTA_ENTI_CITY\\GTA_ENTI_CITY.vcxproj|solutionrelative:GTA_ENTI_CITY\\GTA_ENTI_CITY.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GTA_ENTI_CITY.cpp",
+              "DocumentMoniker": "C:\\Users\\pdiaz\\Documents\\GrandTheftAuto_ENTI_City\\GTA_ENTI_CITY_SOL\\GTA_ENTI_CITY\\GTA_ENTI_CITY.cpp",
+              "RelativeDocumentMoniker": "GTA_ENTI_CITY\\GTA_ENTI_CITY.cpp",
+              "ToolTip": "C:\\Users\\pdiaz\\Documents\\GrandTheftAuto_ENTI_City\\GTA_ENTI_CITY_SOL\\GTA_ENTI_CITY\\GTA_ENTI_CITY.cpp",
+              "RelativeToolTip": "GTA_ENTI_CITY\\GTA_ENTI_CITY.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-05-06T21:21:22.597Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
