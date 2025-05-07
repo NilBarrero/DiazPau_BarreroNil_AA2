@@ -26,5 +26,11 @@
     <ClInclude Include="map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CJ.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Peaton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
