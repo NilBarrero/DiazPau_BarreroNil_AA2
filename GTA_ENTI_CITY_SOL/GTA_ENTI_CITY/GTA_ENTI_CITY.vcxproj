@@ -128,11 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="map.cpp" />
+    <ClCompile Include="Mapa.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CJ.h" />
-    <ClInclude Include="map.h" />
+    <ClInclude Include="Mapa.h" />
     <ClInclude Include="Peaton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
