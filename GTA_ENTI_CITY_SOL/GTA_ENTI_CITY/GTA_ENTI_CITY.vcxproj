@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="GTA_ENTI_CITY.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
   </ItemGroup>
   <ItemGroup>

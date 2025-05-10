@@ -14,9 +14,15 @@ struct Mapa
     int numRows;
     int numCols;
 
+    int initialNPC1;
+    int neededNPC1;
+    int maxLoot1;
+
+    int initialNPC2;
+    int neededNPC2;
+    int maxLoot2;
 
     int gameState;
-
 };
 
 struct Symbols
