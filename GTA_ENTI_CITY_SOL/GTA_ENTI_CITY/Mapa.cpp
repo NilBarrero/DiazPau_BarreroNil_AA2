@@ -97,6 +97,23 @@ void imprimirMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa
 
 void actualizarMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, CJ& cj, Peaton** peatones)
 {
+    // Limpiar mapa de peatones anteriores
+    for (int i = 0; i < datosMapa.numFilasMapa; ++i) {
+        for (int j = 0; j < datosMapa.numColumnasMapa; ++j) {
+            if (mapaJuego[i][j] == 'P') {
+                mapaJuego[i][j] = simbolos.vacio; // Limpia peatones anteriores
+            }
+        }
+    }
+
+    // Añadir peatones vivos
+    for (int i = 0; i < datosMapa.numPeatonesSantos; ++i) {
+        if (peatones[i] != nullptr && peatones[i]->estaVivo) {
+            mapaJuego[peatones[i]->fila][peatones[i]->columna] = 'P';
+        }
+    }
+
+    // Desplazamiento de la cámara
     datosMapa.desplazamientoFilaMapa = datosMapa.filaJugador - NUM_ROWS_VISIBLE / 2;
     datosMapa.desplazamientoColumnaMapa = datosMapa.columnaJugador - NUM_ROWS_VISIBLE / 2;
 

@@ -3,8 +3,8 @@
 #include "Peaton.h"
 #include "CJ.h"
 // La parte del mapa que se imprime
-#define NUM_ROWS_VISIBLE 11
-#define NUM_COLUMNS_VISIBLE 11
+#define NUM_ROWS_VISIBLE 30
+#define NUM_COLUMNS_VISIBLE 30
 
 struct DatosMapa
 {
@@ -21,26 +21,26 @@ struct DatosMapa
     bool generarPeaton;
 
     // Interacción
-    int numPeatonesSantos; // Equivalente a pokemonsRequerios (para Fase 1, enfocado en Santos)
+    int numPeatonesSantos; 
 
     bool interactuandoConPeaton;
-    int indicePeatonInteractuando; // Equivalente a interacionPokemon2
+    int indicePeatonInteractuando; 
 };
 
 struct SimbolosMapa
 {
-    char cjDerecha; // p_derecha
-    char cjIzquierda; // p_izquierda
-    char cjArriba; // p_arriva
-    char cjAbajo; // p_abajo
-    char vacio; // empty
-    char peaton; // pokemon
-    char pared; // pared
-    char dinero; // pokeball (en GTA Fase 1, interactuamos para obtener dinero)
+    char cjDerecha; 
+    char cjIzquierda; 
+    char cjArriba; 
+    char cjAbajo; 
+    char vacio; 
+    char peaton; 
+    char pared; 
+    char dinero; 
 };
 
 enum Escena { INICIO, MENU, JUEGO, FIN_PARTIDA };
 void inicializarMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, CJ cj);
 void imprimirMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, CJ cj, Peaton** peatones);
 void actualizarMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, CJ& cj, Peaton** peatones);
-void generarDinero(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, int fila, int columna); // Equivalente a printPokeball (generamos dinero en el mapa)
+void generarDinero(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, int fila, int columna); 

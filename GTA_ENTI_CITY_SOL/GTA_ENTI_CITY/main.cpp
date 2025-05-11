@@ -19,7 +19,7 @@ int main()
     std::ifstream archivoConfiguracion("config.txt"); 
     if (!archivoConfiguracion.is_open()) {
         std::cout << "No se pudo abrir el archivo." << std::endl;
-        //return 1;
+        
     }
     char coma;
     archivoConfiguracion >> datosMapa.numFilasMapa >> coma; 
@@ -83,6 +83,12 @@ int main()
 
         case JUEGO: 
             std::system("cls");
+            // Agrega peatones vivos al mapa antes de imprimir
+            for (int i = 0; i < datosMapa.numPeatonesSantos; ++i) {
+                if (peatones[i]->estaVivo) {
+                    mapaJuego[peatones[i]->fila][peatones[i]->columna] = 'P';
+                }
+            }
             imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
 
             if (datosMapa.numPeatonesSantos == 1) 
