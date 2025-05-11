@@ -41,16 +41,16 @@ void imprimirMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa
             {
                 switch (cj.posicionCJ)
                 {
-                case 2: // Arriba
+                case 0: // Arriba
                     std::cout << simbolos.cjArriba << " ";
                     break;
-                case 3: // Abajo
+                case 1: // Abajo
                     std::cout << simbolos.cjAbajo << " ";
                     break;
-                case 1: // Izquierda
+                case 2: // Izquierda
                     std::cout << simbolos.cjIzquierda << " ";
                     break;
-                case 0: // Derecha
+                case 3: // Derecha
                     std::cout << simbolos.cjDerecha << " ";
                     break;
                 default:
@@ -90,7 +90,7 @@ void imprimirMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa
     if (datosMapa.interactuandoConPeaton == true)
     {
         std::cout << "Hablando con alguien..." << std::endl;
-        // Aquí iría la lógica de la conversación o interacción
+        // Aquí iría la lógica de la interacción
         // con el peatón identificado por datosMapa.indicePeatonInteractuando
     }
 }
