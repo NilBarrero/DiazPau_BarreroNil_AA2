@@ -5,7 +5,7 @@ class CJ
 public:
     int posicionCJ;    
     int dinero;        
-    int islaActual; //este no sabia que poner
+    int islaActual; 
 
     // Información del archivo de configuración
     int costePuenteSantos;    

@@ -3,8 +3,8 @@
 #include "Peaton.h"
 #include "CJ.h"
 // La parte del mapa que se imprime
-#define NUM_ROWS_VISIBLE 30
-#define NUM_COLUMNS_VISIBLE 30
+#define NUM_ROWS_VISIBLE 11
+#define NUM_COLUMNS_VISIBLE 11
 
 struct DatosMapa
 {

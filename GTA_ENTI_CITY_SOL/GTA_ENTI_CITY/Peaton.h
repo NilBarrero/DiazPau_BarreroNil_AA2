@@ -9,7 +9,7 @@ class Peaton {
 public:
     int fila; 
     int columna; 
-    bool estaVivo; // Nuevo atributo para indicar si el peaton está disponible
+    bool estaVivo; 
 
     // Constructor
     Peaton(int fila, int columna)

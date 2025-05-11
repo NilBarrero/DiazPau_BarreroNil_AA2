@@ -30,9 +30,28 @@ void inicializarMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosM
     datosMapa.columnaJugador = 1;
 }
 
+void colocarPeatones(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, Peaton** peatones)
+{
+    for (int i = 0; i < datosMapa.numPeatonesSantos; ++i)
+    {
+        if (peatones[i]->estaVivo)
+        {
+            int f = peatones[i]->fila;
+            int c = peatones[i]->columna;
+            if (mapaJuego[f][c] == simbolos.vacio)
+            {
+                mapaJuego[f][c] = simbolos.peaton;
+            }
+        }
+    }
+}
+
+
 void imprimirMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, CJ cj, Peaton** peatones)
 {
     actualizarMapa(simbolos, mapaJuego, datosMapa, cj, peatones);
+    colocarPeatones(simbolos, mapaJuego, datosMapa, peatones);
+
     for (int i = datosMapa.desplazamientoFilaMapa; i < NUM_ROWS_VISIBLE + datosMapa.desplazamientoFilaMapa; ++i)
     {
         for (int j = datosMapa.desplazamientoColumnaMapa; j < NUM_COLUMNS_VISIBLE + datosMapa.desplazamientoColumnaMapa; ++j)
@@ -41,42 +60,22 @@ void imprimirMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa
             {
                 switch (cj.posicionCJ)
                 {
-                case 0: // Arriba
-                    std::cout << simbolos.cjArriba << " ";
-                    break;
-                case 1: // Abajo
-                    std::cout << simbolos.cjAbajo << " ";
-                    break;
-                case 2: // Izquierda
-                    std::cout << simbolos.cjIzquierda << " ";
-                    break;
-                case 3: // Derecha
-                    std::cout << simbolos.cjDerecha << " ";
-                    break;
-                default:
-                    std::cout << "? ";
-                    break;
+                case 0: std::cout << simbolos.cjArriba << " "; break;
+                case 1: std::cout << simbolos.cjAbajo << " "; break;
+                case 2: std::cout << simbolos.cjIzquierda << " "; break;
+                case 3: std::cout << simbolos.cjDerecha << " "; break;
+                default: std::cout << "? "; break;
                 }
             }
             else if (i >= 0 && i < datosMapa.numFilasMapa && j >= 0 && j < datosMapa.numColumnasMapa)
             {
                 switch (mapaJuego[i][j])
                 {
-                case 'X':
-                    std::cout << simbolos.pared << " ";
-                    break;
-                case '-':
-                    std::cout << simbolos.vacio << " ";
-                    break;
-                case 'P':
-                    std::cout << simbolos.peaton << " ";
-                    break;
-                case '$':
-                    std::cout << simbolos.dinero << " ";
-                    break;
-                default:
-                    std::cout << mapaJuego[i][j] << " ";
-                    break;
+                case 'X': std::cout << simbolos.pared << " "; break;
+                case '-': std::cout << simbolos.vacio << " "; break;
+                case 'P': std::cout << simbolos.peaton << " "; break;
+                case '$': std::cout << simbolos.dinero << " "; break;
+                default: std::cout << mapaJuego[i][j] << " "; break;
                 }
             }
             else
@@ -86,41 +85,37 @@ void imprimirMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa
         }
         std::cout << std::endl;
     }
+
     std::cout << "Dinero: " << cj.dinero << std::endl;
-    if (datosMapa.interactuandoConPeaton == true)
+    if (datosMapa.interactuandoConPeaton)
     {
-        std::cout << "Hablando con alguien..." << std::endl;
-        // Aquí iría la lógica de la interacción
-        // con el peatón identificado por datosMapa.indicePeatonInteractuando
+        std::cout << "Hablando con alguien..." << std::endl; //test
     }
 }
 
+
 void actualizarMapa(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, CJ& cj, Peaton** peatones)
 {
-    // Limpiar mapa de peatones anteriores
-    for (int i = 0; i < datosMapa.numFilasMapa; ++i) {
-        for (int j = 0; j < datosMapa.numColumnasMapa; ++j) {
-            if (mapaJuego[i][j] == 'P') {
-                mapaJuego[i][j] = simbolos.vacio; // Limpia peatones anteriores
-            }
-        }
-    }
-
-    // Añadir peatones vivos
-    for (int i = 0; i < datosMapa.numPeatonesSantos; ++i) {
-        if (peatones[i] != nullptr && peatones[i]->estaVivo) {
-            mapaJuego[peatones[i]->fila][peatones[i]->columna] = 'P';
-        }
-    }
-
-    // Desplazamiento de la cámara
     datosMapa.desplazamientoFilaMapa = datosMapa.filaJugador - NUM_ROWS_VISIBLE / 2;
-    datosMapa.desplazamientoColumnaMapa = datosMapa.columnaJugador - NUM_ROWS_VISIBLE / 2;
+    datosMapa.desplazamientoColumnaMapa = datosMapa.columnaJugador - NUM_COLUMNS_VISIBLE / 2;
 
     if (datosMapa.desplazamientoFilaMapa < 0) datosMapa.desplazamientoFilaMapa = 0;
     if (datosMapa.desplazamientoColumnaMapa < 0) datosMapa.desplazamientoColumnaMapa = 0;
     if (datosMapa.desplazamientoFilaMapa > datosMapa.numFilasMapa - NUM_ROWS_VISIBLE) datosMapa.desplazamientoFilaMapa = datosMapa.numFilasMapa - NUM_ROWS_VISIBLE;
-    if (datosMapa.desplazamientoColumnaMapa > datosMapa.numColumnasMapa - NUM_ROWS_VISIBLE) datosMapa.desplazamientoColumnaMapa = datosMapa.numColumnasMapa - NUM_ROWS_VISIBLE;
+    if (datosMapa.desplazamientoColumnaMapa > datosMapa.numColumnasMapa - NUM_COLUMNS_VISIBLE) datosMapa.desplazamientoColumnaMapa = datosMapa.numColumnasMapa - NUM_COLUMNS_VISIBLE;
+
+    // Insertar peatones en el mapa
+    for (int i = 0; i < datosMapa.numPeatonesSantos; ++i)
+    {
+        if (peatones[i]->estaVivo)
+        {
+            int f = peatones[i]->fila;
+            int c = peatones[i]->columna;
+            if (mapaJuego[f][c] == simbolos.vacio) {
+                mapaJuego[f][c] = simbolos.peaton;
+            }
+        }
+    }
 }
 
 void generarDinero(SimbolosMapa& simbolos, char** mapaJuego, DatosMapa& datosMapa, int fila, int columna)

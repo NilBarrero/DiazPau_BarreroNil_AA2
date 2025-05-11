@@ -89,6 +89,7 @@ int main()
                     mapaJuego[peatones[i]->fila][peatones[i]->columna] = 'P';
                 }
             }
+
             imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
 
             if (datosMapa.numPeatonesSantos == 1) 
