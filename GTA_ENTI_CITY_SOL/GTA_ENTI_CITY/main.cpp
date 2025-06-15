@@ -1,256 +1,133 @@
 #include <iostream>
-#include "Mapa.h"
-#include "CJ.h"
-#include "Peaton.h"
+#include <vector>
+#include <windows.h>
+#include <conio.h>
 #include <fstream>
 #include <string>
-#include <windows.h>
+#include <cstdlib>
+#include <ctime>
+#include <tuple>
+#include <random>
 
-int main()
-{
-    Escena escenaActual = JUEGO; 
-    bool juegoEnEjecucion = true; 
-    DatosMapa datosMapa = { 0, 0, 5, 5 }; 
-    SimbolosMapa simbolosMapa = { '>', '<', '^', 'v', '-', 'P', 'X', '$' }; 
-    CJ cj; 
-    datosMapa.interactuandoConPeaton = false; 
+using namespace std;
 
-    // Abrir el archivo
-    std::ifstream archivoConfiguracion("config.txt"); 
-    if (!archivoConfiguracion.is_open()) {
-        std::cout << "No se pudo abrir el archivo." << std::endl;
-        
+const int VISTA_ANCHO = 20;  // tamaño visible del mapa horizontal
+const int VISTA_ALTO = 10;   // tamaño visible del mapa vertical
+
+struct CJ {
+    int x = 0, y = 0;
+    char icono = 'v';
+};
+
+struct Peaton {
+    int x = 0, y = 0;
+    bool horizontal = true;
+};
+
+// Leer configuración
+std::tuple<int, int, int, int, int, int, int> leerConfig() {
+    ifstream file("config.txt");
+    int ancho, alto;
+    int p1, d1, m1;
+    int p2, d2, m2;
+    char sep;
+    file >> ancho >> sep >> alto >> sep;
+    file >> p1 >> sep >> d1 >> sep >> m1 >> sep;
+    file >> p2 >> sep >> d2 >> sep >> m2;
+    return { ancho, alto, p1, d1, m1, d2, m2 };
+}
+
+// Mostrar vista centrada en CJ
+void mostrarVista(const vector<vector<char>>& mapa, CJ& cj) {
+    system("cls");
+    int inicioY = max(0, cj.y - VISTA_ALTO / 2);
+    int finY = min((int)mapa.size(), inicioY + VISTA_ALTO);
+    int inicioX = max(0, cj.x - VISTA_ANCHO / 2);
+    int finX = min((int)mapa[0].size(), inicioX + VISTA_ANCHO);
+
+    for (int i = inicioY; i < finY; ++i) {
+        for (int j = inicioX; j < finX; ++j) {
+            cout << mapa[i][j];
+        }
+        cout << endl;
     }
-    char coma;
-    archivoConfiguracion >> datosMapa.numFilasMapa >> coma; 
-    archivoConfiguracion >> datosMapa.numColumnasMapa >> coma; 
-    archivoConfiguracion >> cj.costePuenteSantos >> coma; 
-    archivoConfiguracion >> cj.maxDineroPeatonSantos >> coma;
-    archivoConfiguracion >> cj.costePuenteFierro >> coma; 
-    archivoConfiguracion >> cj.maxDineroPeatonFierro >> coma; 
+}
 
-    archivoConfiguracion.close();
+// Mover peatones
+void moverPeatones(vector<Peaton>& peatones, vector<vector<char>>& mapa, CJ& cj) {
+    for (auto& p : peatones) {
+        // Si CJ está a 1 casilla, se detiene
+        if (abs(p.x - cj.x) <= 1 && abs(p.y - cj.y) <= 1) continue;
 
-    char** mapaJuego; 
-    mapaJuego = new char* [datosMapa.numFilasMapa];
-
-    for (int i = 0; i < datosMapa.numFilasMapa; i++)
-    {
-        mapaJuego[i] = new char[datosMapa.numColumnasMapa];
+        mapa[p.y][p.x] = '#';
+        if (p.horizontal) {
+            int dir = rand() % 2 ? 1 : -1;
+            if (p.x + dir > 0 && p.x + dir < mapa[0].size() && mapa[p.y][p.x + dir] == '#')
+                p.x += dir;
+        }
+        else {
+            int dir = rand() % 2 ? 1 : -1;
+            if (p.y + dir > 0 && p.y + dir < mapa.size() && mapa[p.y + dir][p.x] == '#')
+                p.y += dir;
+        }
+        mapa[p.y][p.x] = 'P';
     }
+}
 
-    Peaton** peatones = new Peaton * [cj.costePuenteSantos + cj.costePuenteFierro]; 
+int main() {
+    srand(time(0));
 
-    cj.dinero = 0; 
+    int ancho, alto, p1, d1, m1, d2, m2;
+    tie(ancho, alto, p1, d1, m1, d2, m2) = leerConfig();
 
-    srand(time(NULL));
-    inicializarMapa(simbolosMapa, mapaJuego, datosMapa, cj);
-    cj.posicionCJ = 0; 
-    datosMapa.generarPeaton = true; 
+    vector<vector<char>> mapa(alto, vector<char>(ancho, '#'));
 
-    while (juegoEnEjecucion == true) 
-    {
-        switch (escenaActual) 
-        {
-        case INICIO: 
+    CJ cj;
+    cj.x = 1;
+    cj.y = 1;
+    mapa[cj.y][cj.x] = cj.icono;
 
-            Sleep(3000);
-            std::system("cls");
-            escenaActual = MENU; 
-            break;
-
-        case MENU: 
-
-            char entrada; 
-
-            std::cout << "Please enter 'P' to play or 'E' to exit: ";
-            std::cin >> entrada;
-
-            if (entrada == 'P' || entrada == 'p')
-            {
-                std::system("cls");
-                escenaActual = JUEGO; 
-            }
-            else
-            {
-                std::system("cls");
-                escenaActual = INICIO; 
-                juegoEnEjecucion = false; 
-
-            }
-
-            break;
-
-        case JUEGO: 
-            std::system("cls");
-            // Agrega peatones vivos al mapa antes de imprimir
-            for (int i = 0; i < datosMapa.numPeatonesSantos; ++i) {
-                if (peatones[i]->estaVivo) {
-                    mapaJuego[peatones[i]->fila][peatones[i]->columna] = 'P';
-                }
-            }
-
-            imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
-
-            if (datosMapa.numPeatonesSantos == 1) 
-            {
-                if (datosMapa.escenaActual <= 3) 
-                {
-                    datosMapa.escenaActual++; 
-                    datosMapa.generarPeaton = true; 
-                }
-                datosMapa.numPeatonesSantos = 0; 
-            }
-
-
-            if (mapaJuego[datosMapa.filaJugador - 1][datosMapa.columnaJugador] == simbolosMapa.peaton) { 
-                datosMapa.interactuandoConPeaton = true; 
-                datosMapa.indicePeatonInteractuando = 1; 
-            }
-
-            else if (mapaJuego[datosMapa.filaJugador + 1][datosMapa.columnaJugador] == simbolosMapa.peaton) { 
-                datosMapa.interactuandoConPeaton = true; 
-                datosMapa.indicePeatonInteractuando = 2; 
-            }
-
-            else if (mapaJuego[datosMapa.filaJugador][datosMapa.columnaJugador - 1] == simbolosMapa.peaton) { 
-                datosMapa.interactuandoConPeaton = true; 
-                datosMapa.indicePeatonInteractuando = 3; 
-            }
-
-            else if (mapaJuego[datosMapa.filaJugador][datosMapa.columnaJugador + 1] == simbolosMapa.peaton) { 
-                datosMapa.interactuandoConPeaton = true; 
-                datosMapa.indicePeatonInteractuando = 4; 
-            }
-
-
-
-
-
-            if (GetAsyncKeyState(VK_UP)) {
-                if (mapaJuego[datosMapa.filaJugador - 1][datosMapa.columnaJugador] == simbolosMapa.vacio) { 
-                    datosMapa.interactuandoConPeaton = false; 
-                    if (datosMapa.filaJugador - 1 < 5 || datosMapa.filaJugador - 1 > datosMapa.numFilasMapa - 7) { 
-                        datosMapa.filaJugador--; 
-                    }
-                    else if (datosMapa.desplazamientoFilaMapa - 1 > -1) 
-                    {
-                        datosMapa.desplazamientoFilaMapa--; 
-                        datosMapa.filaJugador--; 
-                    }
-                }
-
-                cj.posicionCJ = 0; 
-                std::system("cls");
-                imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
-            }
-            if (GetAsyncKeyState(VK_DOWN)) {
-                if (mapaJuego[datosMapa.filaJugador + 1][datosMapa.columnaJugador] == simbolosMapa.vacio) { 
-                    if (datosMapa.filaJugador + 1 < 6 || datosMapa.filaJugador + 1 > datosMapa.numFilasMapa - 6) 
-                    {
-                        datosMapa.filaJugador++;
-                    }
-                    else if (datosMapa.desplazamientoFilaMapa + 1 < datosMapa.numFilasMapa + 1) 
-                    {
-                        datosMapa.desplazamientoFilaMapa++; 
-                        datosMapa.filaJugador++;
-                    }
-                }
-
-                cj.posicionCJ = 1; 
-                std::system("cls");
-                imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
-            }
-            if (GetAsyncKeyState(VK_LEFT)) {
-                datosMapa.interactuandoConPeaton = false; 
-                if (mapaJuego[datosMapa.filaJugador][datosMapa.columnaJugador - 1] == simbolosMapa.vacio) { 
-                    if (datosMapa.columnaJugador - 1 < 5) 
-                    {
-                        datosMapa.columnaJugador--; 
-                    }
-                    else if (datosMapa.desplazamientoColumnaMapa - 1 > -1) 
-                    {
-                        datosMapa.desplazamientoColumnaMapa--; 
-                        datosMapa.columnaJugador--; 
-                    }
-                }
-
-                cj.posicionCJ = 2; 
-                std::system("cls");
-                imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
-            }
-            if (GetAsyncKeyState(VK_RIGHT)) {
-                datosMapa.interactuandoConPeaton = false; 
-                if (mapaJuego[datosMapa.filaJugador][datosMapa.columnaJugador + 1] == simbolosMapa.vacio) { 
-                    if (datosMapa.columnaJugador + 1 < 6) 
-                    {
-                        datosMapa.columnaJugador++; 
-                    }
-                    else if (datosMapa.desplazamientoColumnaMapa + 1 < datosMapa.numColumnasMapa + 1) 
-                    {
-                        datosMapa.desplazamientoColumnaMapa++; 
-                        datosMapa.columnaJugador++; 
-                    }
-                }
-                cj.posicionCJ = 3; 
-                std::system("cls");
-                imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
-
-            }
-            if (GetAsyncKeyState(VK_SPACE)) {
-                switch (cj.posicionCJ) 
-                {
-                case 0:
-                    if (mapaJuego[datosMapa.filaJugador - 1][datosMapa.columnaJugador] == simbolosMapa.peaton) { 
-
-                        mapaJuego[datosMapa.filaJugador - 1][datosMapa.columnaJugador] = simbolosMapa.vacio; 
-                        datosMapa.numPeatonesSantos++; 
-                        cj.dinero++; 
-                        
-                        std::system("cls");
-                        imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
-                    }
-                    break;
-                case 1:
-                    if (mapaJuego[datosMapa.filaJugador + 1][datosMapa.columnaJugador] == simbolosMapa.peaton) { 
-                        mapaJuego[datosMapa.filaJugador + 1][datosMapa.columnaJugador] = simbolosMapa.vacio; 
-                        datosMapa.numPeatonesSantos++; 
-                        cj.dinero++; 
-                        std::system("cls");
-                        imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
-                    }
-                    break;
-                case 2:
-                    if (mapaJuego[datosMapa.filaJugador][datosMapa.columnaJugador - 1] == simbolosMapa.peaton) { 
-                        mapaJuego[datosMapa.filaJugador][datosMapa.columnaJugador - 1] = simbolosMapa.vacio; 
-                        datosMapa.numPeatonesSantos++; 
-                        cj.dinero++; 
-                        std::system("cls");
-                        imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
-                    }
-                    break;
-                case 3:
-                    if (mapaJuego[datosMapa.filaJugador][datosMapa.columnaJugador + 1] == simbolosMapa.peaton) { 
-                        mapaJuego[datosMapa.filaJugador][datosMapa.columnaJugador + 1] = simbolosMapa.vacio; 
-                        datosMapa.numPeatonesSantos++; 
-                        cj.dinero++; 
-                        std::system("cls");
-                        imprimirMapa(simbolosMapa, mapaJuego, datosMapa, cj, peatones); 
-                    }
-                    break;
-                }
-            }
-            if (GetAsyncKeyState(VK_ESCAPE)) {
-                escenaActual = FIN_PARTIDA; 
-            }
-            Sleep(200);
-            break;
-        case FIN_PARTIDA: 
-            std::system("cls");
-            Sleep(5000);
-            std::system("cls");
-            escenaActual = MENU; 
-            break;
+    // Crear peatones aleatorios para Los Santos
+    vector<Peaton> peatones;
+    for (int i = 0; i < p1; ++i) {
+        Peaton p;
+        p.x = rand() % ancho;
+        p.y = rand() % (alto / 3);
+        p.horizontal = rand() % 2;
+        if (mapa[p.y][p.x] == '#') {
+            mapa[p.y][p.x] = 'P';
+            peatones.push_back(p);
         }
     }
+
+    while (true) {
+        mostrarVista(mapa, cj);
+        if (GetAsyncKeyState(VK_ESCAPE)) break;
+
+        // Mover CJ
+        mapa[cj.y][cj.x] = '#';
+        if (GetAsyncKeyState(VK_UP) && cj.y > 0) {
+            cj.y--;
+            cj.icono = '^';
+        }
+        else if (GetAsyncKeyState(VK_DOWN) && cj.y < alto - 1) {
+            cj.y++;
+            cj.icono = 'v';
+        }
+        else if (GetAsyncKeyState(VK_LEFT) && cj.x > 0) {
+            cj.x--;
+            cj.icono = '<';
+        }
+        else if (GetAsyncKeyState(VK_RIGHT) && cj.x < ancho - 1) {
+            cj.x++;
+            cj.icono = '>';
+        }
+        mapa[cj.y][cj.x] = cj.icono;
+
+        moverPeatones(peatones, mapa, cj);
+
+        Sleep(100);
+    }
+
+    return 0;
 }

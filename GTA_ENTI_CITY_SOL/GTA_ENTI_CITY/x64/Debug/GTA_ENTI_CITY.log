@@ -1,2 +1,6 @@
-﻿  Mapa.cpp
-  GTA_ENTI_CITY.vcxproj -> C:\Users\Usuari\Documents\Progra ex\DinoRand\GrandTheftAuto_ENTI_City\GTA_ENTI_CITY_SOL\x64\Debug\GTA_ENTI_CITY.exe
+﻿  main.cpp
+C:\Users\Usuari\Documents\Progra ex\DinoRand\DiazPau_BarreroNil_AA2\GTA_ENTI_CITY_SOL\GTA_ENTI_CITY\main.cpp(78,15): warning C4244: 'argumento': conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
+  Mapa.cpp
+  Generando código...
+  LINK : no se encontró C:\Users\Usuari\Documents\Progra ex\DinoRand\DiazPau_BarreroNil_AA2\GTA_ENTI_CITY_SOL\x64\Debug\GTA_ENTI_CITY.exe o no lo generó el último vínculo incremental; ejecutando vínculo completo
+  GTA_ENTI_CITY.vcxproj -> C:\Users\Usuari\Documents\Progra ex\DinoRand\DiazPau_BarreroNil_AA2\GTA_ENTI_CITY_SOL\x64\Debug\GTA_ENTI_CITY.exe
