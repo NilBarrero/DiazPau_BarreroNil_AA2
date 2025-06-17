@@ -74,60 +74,152 @@ void moverPeatones(vector<Peaton>& peatones, vector<vector<char>>& mapa, CJ& cj)
     }
 }
 
+const int INIT = 0;
+const int MENU = 1;
+const int GAME = 2;
+const int GAMEOVER = 3;
+const int EXIT = 4;
+
 int main() {
     srand(time(0));
-
-    int ancho, alto, p1, d1, m1, d2, m2;
-    tie(ancho, alto, p1, d1, m1, d2, m2) = leerConfig();
-
-    vector<vector<char>> mapa(alto, vector<char>(ancho, '#'));
+    int estado = INIT;
+    DWORD tiempoInicio;
+    bool bigSmokeDerrotado = false;
+    bool sinDinero = false;
+    bool cruzandoPeaje = false;
+    bool sinVida = false;
 
     CJ cj;
-    cj.x = 1;
-    cj.y = 1;
-    mapa[cj.y][cj.x] = cj.icono;
-
-    // Crear peatones aleatorios para Los Santos
     vector<Peaton> peatones;
-    for (int i = 0; i < p1; ++i) {
-        Peaton p;
-        p.x = rand() % ancho;
-        p.y = rand() % (alto / 3);
-        p.horizontal = rand() % 2;
-        if (mapa[p.y][p.x] == '#') {
-            mapa[p.y][p.x] = 'P';
-            peatones.push_back(p);
-        }
-    }
+    vector<vector<char>> mapa;
+    int ancho, alto, p1, d1, m1, d2, m2;
 
-    while (true) {
-        mostrarVista(mapa, cj);
-        if (GetAsyncKeyState(VK_ESCAPE)) break;
-
-        // Mover CJ
-        mapa[cj.y][cj.x] = '#';
-        if (GetAsyncKeyState(VK_UP) && cj.y > 0) {
-            cj.y--;
-            cj.icono = '^';
+    while (estado != EXIT) {
+        switch (estado) {
+        case INIT: {
+            system("cls");
+            cout << "====== GRAND CJ AUTO ======" << endl;
+            cout << "Cargando..." << endl;
+            Sleep(3000);  // Espera 3 segundos
+            estado = MENU;
+            break;
         }
-        else if (GetAsyncKeyState(VK_DOWN) && cj.y < alto - 1) {
-            cj.y++;
+
+        case MENU: {
+            system("cls");
+            cout << "====== MENU PRINCIPAL ======" << endl;
+            cout << "1. Play" << endl;
+            cout << "2. Exit" << endl;
+
+            while (true) {
+                if (_kbhit()) {
+                    char opcion = _getch();
+                    if (opcion == '1') {
+                        estado = GAME;
+                        break;
+                    }
+                    else if (opcion == '2') {
+                        estado = EXIT;
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+
+        case GAME: {
+            tie(ancho, alto, p1, d1, m1, d2, m2) = leerConfig();
+            mapa.assign(alto, vector<char>(ancho, '#'));
+            peatones.clear();
+            cj.x = 1;
+            cj.y = 1;
             cj.icono = 'v';
-        }
-        else if (GetAsyncKeyState(VK_LEFT) && cj.x > 0) {
-            cj.x--;
-            cj.icono = '<';
-        }
-        else if (GetAsyncKeyState(VK_RIGHT) && cj.x < ancho - 1) {
-            cj.x++;
-            cj.icono = '>';
-        }
-        mapa[cj.y][cj.x] = cj.icono;
+            mapa[cj.y][cj.x] = cj.icono;
 
-        moverPeatones(peatones, mapa, cj);
+            for (int i = 0; i < p1; ++i) {
+                Peaton p;
+                p.x = rand() % ancho;
+                p.y = rand() % (alto / 3);
+                p.horizontal = rand() % 2;
+                if (mapa[p.y][p.x] == '#') {
+                    mapa[p.y][p.x] = 'P';
+                    peatones.push_back(p);
+                }
+            }
 
-        Sleep(100);
+            // Variables de juego
+            int dinero = 10;
+            int salud = 10;
+
+            while (true) {
+                mostrarVista(mapa, cj);
+                if (GetAsyncKeyState(VK_ESCAPE)) {
+                    estado = MENU;
+                    break;
+                }
+
+                // Simulación simple para condiciones de GameOver:
+                if (cj.y == alto - 1) {
+                    cruzandoPeaje = true;
+                    if (dinero <= 0) {
+                        sinDinero = true;
+                    }
+                }
+
+                if (salud <= 0) sinVida = true;
+
+                // Condiciones de GameOver
+                if (bigSmokeDerrotado || (cruzandoPeaje && sinDinero) || sinVida) {
+                    estado = GAMEOVER;
+                    tiempoInicio = GetTickCount();
+                    break;
+                }
+
+                // Movimiento CJ
+                mapa[cj.y][cj.x] = '#';
+                if (GetAsyncKeyState(VK_UP) && cj.y > 0) {
+                    cj.y--;
+                    cj.icono = '^';
+                }
+                else if (GetAsyncKeyState(VK_DOWN) && cj.y < alto - 1) {
+                    cj.y++;
+                    cj.icono = 'v';
+                }
+                else if (GetAsyncKeyState(VK_LEFT) && cj.x > 0) {
+                    cj.x--;
+                    cj.icono = '<';
+                }
+                else if (GetAsyncKeyState(VK_RIGHT) && cj.x < ancho - 1) {
+                    cj.x++;
+                    cj.icono = '>';
+                }
+                mapa[cj.y][cj.x] = cj.icono;
+
+                moverPeatones(peatones, mapa, cj);
+
+                // Simula pérdida de salud para pruebas
+                //salud--;
+
+                Sleep(100);
+            }
+            break;
+        }
+
+        case GAMEOVER: {
+            system("cls");
+            cout << "===== GAME OVER =====" << endl;
+            if (bigSmokeDerrotado) cout << "Derrotaste a Big Smoke!" << endl;
+            else if (sinVida) cout << "Te has quedado sin salud." << endl;
+            else if (sinDinero && cruzandoPeaje) cout << "No tenías dinero para el peaje y fuiste detenido." << endl;
+            else cout << "Motivo desconocido." << endl;
+
+            Sleep(5000);
+            estado = EXIT;
+            break;
+        }
+        }
     }
 
     return 0;
 }
+

@@ -6,6 +6,7 @@ public:
     int posicionCJ;    
     int dinero;        
     int islaActual; 
+    int salud = 100;
 
     // Información del archivo de configuración
     int costePuenteSantos;    
