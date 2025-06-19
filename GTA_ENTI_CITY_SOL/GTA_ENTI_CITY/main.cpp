@@ -1,3 +1,4 @@
+//main.cpp
 #include <iostream>
 #include <vector>
 #include <windows.h>
@@ -8,16 +9,12 @@
 #include <ctime>
 #include <tuple>
 #include <random>
+#include "CJ.h"
 
 using namespace std;
 
 const int VISTA_ANCHO = 20;  // tamaño visible del mapa horizontal
 const int VISTA_ALTO = 10;   // tamaño visible del mapa vertical
-
-struct CJ {
-    int x = 0, y = 0;
-    char icono = 'v';
-};
 
 struct Peaton {
     int x = 0, y = 0;
@@ -88,6 +85,7 @@ int main() {
     bool sinDinero = false;
     bool cruzandoPeaje = false;
     bool sinVida = false;
+    bool ePresionada = false;
 
     CJ cj;
     vector<Peaton> peatones;
@@ -136,6 +134,14 @@ int main() {
             cj.icono = 'v';
             mapa[cj.y][cj.x] = cj.icono;
 
+            // Spawnear coche cerca de CJ (solo para testeo
+            int cocheSpawnX = cj.x + 1;
+            int cocheSpawnY = cj.y + 1;
+
+            if (mapa[cocheSpawnY][cocheSpawnX] == '#') {
+                mapa[cocheSpawnY][cocheSpawnX] = 'C';
+            }
+            //---------------------------------------------
             for (int i = 0; i < p1; ++i) {
                 Peaton p;
                 p.x = rand() % ancho;
@@ -175,25 +181,87 @@ int main() {
                     break;
                 }
 
-                // Movimiento CJ
-                mapa[cj.y][cj.x] = '#';
-                if (GetAsyncKeyState(VK_UP) && cj.y > 0) {
-                    cj.y--;
-                    cj.icono = '^';
+                //Subir a coche
+                if (GetAsyncKeyState('E') & 0x8000) {
+                    if (!ePresionada) {
+                        if (!cj.enCoche) {
+                            // Ver si hay un coche adyacente
+                            bool subido = false;
+                            for (int dx = -1; dx <= 1 && !subido; ++dx) {
+                                for (int dy = -1; dy <= 1 && !subido; ++dy) {
+                                    int nx = cj.x + dx;
+                                    int ny = cj.y + dy;
+                                    if (nx >= 0 && ny >= 0 && nx < ancho && ny < alto && mapa[ny][nx] == 'C') {
+                                        cj.enCoche = true;
+                                        cj.cocheX = nx;
+                                        cj.cocheY = ny;
+                                        mapa[cj.y][cj.x] = '#'; // CJ desaparece
+                                        subido = true;
+                                    }
+                                }
+                            }
+                        }
+                        else {
+                            // Bajar del coche
+                            bool bajado = false;
+                            for (int dx = -1; dx <= 1 && !bajado; ++dx) {
+                                for (int dy = -1; dy <= 1 && !bajado; ++dy) {
+                                    int nx = cj.cocheX + dx;
+                                    int ny = cj.cocheY + dy;
+                                    if (nx >= 0 && ny >= 0 && nx < ancho && ny < alto && mapa[ny][nx] == '#') {
+                                        cj.enCoche = false;
+                                        cj.x = nx;
+                                        cj.y = ny;
+                                        mapa[ny][nx] = cj.icono;
+                                        bajado = true;
+                                    }
+                                }
+                            }
+                        }
+                        ePresionada = true;
+                    }
                 }
-                else if (GetAsyncKeyState(VK_DOWN) && cj.y < alto - 1) {
-                    cj.y++;
-                    cj.icono = 'v';
+                else {
+                    ePresionada = false;
                 }
-                else if (GetAsyncKeyState(VK_LEFT) && cj.x > 0) {
-                    cj.x--;
-                    cj.icono = '<';
+
+                // Movimiento (CJ o coche)
+                if (!cj.enCoche) {
+                    mapa[cj.y][cj.x] = '#';
+                    if (GetAsyncKeyState(VK_UP) && cj.y > 0) {
+                        cj.y--;
+                        cj.icono = '^';
+                    }
+                    else if (GetAsyncKeyState(VK_DOWN) && cj.y < alto - 1) {
+                        cj.y++;
+                        cj.icono = 'v';
+                    }
+                    else if (GetAsyncKeyState(VK_LEFT) && cj.x > 0) {
+                        cj.x--;
+                        cj.icono = '<';
+                    }
+                    else if (GetAsyncKeyState(VK_RIGHT) && cj.x < ancho - 1) {
+                        cj.x++;
+                        cj.icono = '>';
+                    }
+                    mapa[cj.y][cj.x] = cj.icono;
                 }
-                else if (GetAsyncKeyState(VK_RIGHT) && cj.x < ancho - 1) {
-                    cj.x++;
-                    cj.icono = '>';
+                else {
+                    mapa[cj.cocheY][cj.cocheX] = '#';
+                    if (GetAsyncKeyState(VK_UP) && cj.cocheY > 0) {
+                        cj.cocheY--;
+                    }
+                    else if (GetAsyncKeyState(VK_DOWN) && cj.cocheY < alto - 1) {
+                        cj.cocheY++;
+                    }
+                    else if (GetAsyncKeyState(VK_LEFT) && cj.cocheX > 0) {
+                        cj.cocheX--;
+                    }
+                    else if (GetAsyncKeyState(VK_RIGHT) && cj.cocheX < ancho - 1) {
+                        cj.cocheX++;
+                    }
+                    mapa[cj.cocheY][cj.cocheX] = 'C';
                 }
-                mapa[cj.y][cj.x] = cj.icono;
 
                 moverPeatones(peatones, mapa, cj);
 
